@@ -16,7 +16,7 @@ Small drop-in component which allows UITableView to be manipulated in reactive m
 Any insertions or deletions are performed immediately to a backing data structure, however, tableView itself is affected in different way: first event is flushed to a tableView immediately, subseqent events, while tableView animations are in place, are buffered and flushed only when tableView finishes it's first animation. That way, no matter how often or rare events are sent to tableView, it's updating animations will be serial and won't interfere with each other.
 ## Credits
 
-** TableViewReactiveAdapter** was created by Sergey [@octogavrix] Gavrilyuk.
+**wTableViewReactiveAdapter** was created by Sergey [@octogavrix] Gavrilyuk.
 
 [@octogavrix]:https://twitter.com/octogavrix
 
