@@ -7,9 +7,7 @@
 //
 
 #import "SRGTableViewReactiveAdapter.h"
-
 #import <libextobjc/extobjc.h>
-#import "NSIndexSet+RACSequenceAdditions.h"
 
 typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	SRGInsertRows,
@@ -259,7 +257,6 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 @property (nonatomic) RACCommand *flushCommand;
 
 @property (nonatomic) UITableView *tableView;
-@property (nonatomic, copy) UITableViewCell *(^tableViewCellBlock)(UITableView *tableVew, NSIndexPath *indexPath, id item);
 @property (nonatomic) RACSubject *sourceEventsSignal;
 
 @property (nonatomic) NSMutableArray *tableViewSource;
@@ -270,11 +267,16 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 @implementation SRGTableViewReactiveAdapter
 
 - (instancetype)initWithTableView:(UITableView *)tableView
-				 withInitialState:(NSArray *)array
-			  withCellTuningBlock:(UITableViewCell *(^)(UITableView *, NSIndexPath *, id item))cellBlock {
+				 withInitialState:(NSArray *)array {
 	self = [super init];
 	self.tableView = tableView;
+	
+	self.dataSource = self.tableView.dataSource;
+	self.delegate = self.tableView.delegate;
+	
 	self.tableView.dataSource = self;
+	self.tableView.delegate = self;
+	
 	self.flushCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
 		return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
 			[self processTableViewFlush];
@@ -287,7 +289,6 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 		}];
 	}];
 	self.sourceEventsSignal = [RACSubject subject];
-	self.tableViewCellBlock = cellBlock;
 	
 	NSMutableArray *arr = [NSMutableArray array];
 	for (NSArray *innerArr in array) {
@@ -401,14 +402,6 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	return [self.tableViewSource[section] count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	UITableViewCell *cell = nil;
-	if (self.tableViewCellBlock) {
-		cell = self.tableViewCellBlock(tableView, indexPath, self.tableViewSource[indexPath.section][indexPath.row]);
-	}
-	return cell;
-}
-
 
 - (NSUInteger)numberOfSections {
 	return self.tableViewSource.count;
@@ -418,4 +411,23 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	NSAssert(section < self.tableViewSource.count, @"Section requested (%d) not present (%d sections)", section, self.tableViewSource.count);
 	return [self.tableViewSource[section] count];
 }
+
+#pragma mark - UITableViewDatasource and -Delegate passs-through forwarding
+
+- (id)forwardingTargetForSelector:(SEL)aSelector {
+	struct objc_method_description requiredMethod = protocol_getMethodDescription(@protocol(UITableViewDataSource), aSelector, YES, YES);
+	struct objc_method_description nonRequiredMethod = protocol_getMethodDescription(@protocol(UITableViewDataSource), aSelector, NO, YES);
+	if (requiredMethod.name || nonRequiredMethod.name) {
+		return self.dataSource?:[super forwardingTargetForSelector:aSelector];
+	}
+	else {
+		struct objc_method_description requiredMethod = protocol_getMethodDescription(@protocol(UITableViewDelegate), aSelector, YES, YES);
+		struct objc_method_description nonRequiredMethod = protocol_getMethodDescription(@protocol(UITableViewDelegate), aSelector, NO, YES);
+		if (requiredMethod.name || nonRequiredMethod.name) {
+			return self.delegate?:[super forwardingTargetForSelector:aSelector];
+		}
+	}
+	return [self forwardingTargetForSelector:aSelector];
+}
+
 @end

@@ -19,11 +19,14 @@
 @interface SRGTableViewReactiveAdapter : NSObject <UITableViewDataSource>
 
 - (instancetype)initWithTableView:(UITableView *)tableView
-				 withInitialState:(NSArray *)array
-			  withCellTuningBlock:(UITableViewCell *(^)(UITableView* tableView, NSIndexPath *indexPath, id item))cellBlock;
+				 withInitialState:(NSArray *)array;
 
 - (id<RACSubscriber>)sourceEventsSubscriber;
 
 - (NSUInteger)numberOfSections;
 - (NSUInteger)numberOfRowsInSection:(NSUInteger)section;
+
+@property (nonatomic, weak) id<UITableViewDataSource> dataSource;
+@property (nonatomic, weak) id<UITableViewDelegate> delegate;
+
 @end
