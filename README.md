@@ -5,6 +5,14 @@ Small drop-in component which allows UITableView to be manipulated in reactive m
 ## Idea
 While trying to adopt new reactive programming paradigm and ReactiveCocoa framework in particular in one of my projects, I found it extremely difficult to eliminate all those states bound to `UITableView` and it's datasource. I came up with pretty complicated signals scheme to only insert and delete spinning indicator at the bottom of the table when network request is kicked off and when it's completed. Futhermore, pretty the same boilerplate is needed to perform any other `UITableView` manipulation. So I decided to make a general solution suitable for all reactive-powered use cases. This [question](https://github.com/ReactiveCocoa/ReactiveCocoa/issues/904) in `ReactiveCocoa` repo also made me think more about it.
 
+## Installing
+You can integrate TableViewReactiveAdapter through cocoapods:
+```
+pod 'TableViewReactiveAdapter', :git=> 'https://github.com/gavrix/TableViewReactiveAdapter.git'
+```
+**TableViewReactiveAdapter** has **ReactiveCocoa** and **libextobjc** as dependencies, so these pods will be setup automatically.
+
+
 ## Usage 
 **TableViewReactiveAdapter** takes a UITableView it manages and act as a datasource for it. It exposes `subscriber` property which you can susbcribe to a `ReactiveCocoa`'s signal. This `subscriber` is designed to receive objects of class `SRGTableViewModificationEvent` and it simply filters out any other objects. The simplest items insert to the top of a tableView in response to an event could look like this:
 
