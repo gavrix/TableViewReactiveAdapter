@@ -20,3 +20,5 @@ Any insertions or deletions are performed immediately to a backing data structur
 
 [@octogavrix]:https://twitter.com/octogavrix
 
+## License
+**TableViewReactiveAdapter** is available under the MIT license. See the LICENSE file for more info.
