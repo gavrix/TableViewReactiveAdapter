@@ -25,6 +25,7 @@
 
 - (NSUInteger)numberOfSections;
 - (NSUInteger)numberOfRowsInSection:(NSUInteger)section;
+- (id)itemAtIndexPath:(NSIndexPath *)indexPath;
 
 @property (nonatomic, weak) id<UITableViewDataSource> dataSource;
 @property (nonatomic, weak) id<UITableViewDelegate> delegate;

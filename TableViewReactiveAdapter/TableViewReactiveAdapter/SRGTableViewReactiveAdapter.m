@@ -412,6 +412,12 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	return [self.tableViewSource[section] count];
 }
 
+- (id)itemAtIndexPath:(NSIndexPath *)indexPath {
+	NSAssert(indexPath.section < self.tableViewSource.count, @"Section requested (%d) not present (%d sections)", indexPath.section, self.tableViewSource.count);
+	NSAssert(indexPath.row < [self.tableViewSource[indexPath.section] count], @"Item requested (%d row) not present (%d rows) in (%d) section", indexPath.row, [self.tableViewSource[indexPath.section] count], indexPath.section);
+	return self.tableViewSource[indexPath.section][indexPath.row];
+}
+
 #pragma mark - UITableViewDatasource and -Delegate passs-through forwarding
 
 - (id)forwardingTargetForSelector:(SEL)aSelector {
