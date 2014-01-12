@@ -28,6 +28,5 @@
 - (id)itemAtIndexPath:(NSIndexPath *)indexPath;
 
 @property (nonatomic, weak) id<UITableViewDataSource> dataSource;
-@property (nonatomic, weak) id<UITableViewDelegate> delegate;
 
 @end

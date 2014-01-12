@@ -272,10 +272,7 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	self.tableView = tableView;
 	
 	self.dataSource = self.tableView.dataSource;
-	self.delegate = self.tableView.delegate;
-	
 	self.tableView.dataSource = self;
-	self.tableView.delegate = self;
 	
 	self.flushCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
 		return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
@@ -402,7 +399,7 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
-	return [self.dataSource respondsToSelector:aSelector] || [self.delegate respondsToSelector:aSelector];
+	return [self.dataSource respondsToSelector:aSelector];
 }
 
 
@@ -433,13 +430,7 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	if (requiredMethod.name || nonRequiredMethod.name) {
 		return self.dataSource?:[super forwardingTargetForSelector:aSelector];
 	}
-	else {
-		struct objc_method_description requiredMethod = protocol_getMethodDescription(@protocol(UITableViewDelegate), aSelector, YES, YES);
-		struct objc_method_description nonRequiredMethod = protocol_getMethodDescription(@protocol(UITableViewDelegate), aSelector, NO, YES);
-		if (requiredMethod.name || nonRequiredMethod.name) {
-			return self.delegate?:[super forwardingTargetForSelector:aSelector];
-		}
-	}
+
 	return [self forwardingTargetForSelector:aSelector];
 }
 
