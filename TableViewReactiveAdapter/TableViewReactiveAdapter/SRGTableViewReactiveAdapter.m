@@ -405,6 +405,9 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	return [self.dataSource respondsToSelector:aSelector] || [self.delegate respondsToSelector:aSelector];
 }
 
+
+#pragma mark - State access methods
+
 - (NSUInteger)numberOfSections {
 	return self.tableViewSource.count;
 }
