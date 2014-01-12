@@ -401,6 +401,9 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	return [self.tableViewSource[section] count];
 }
 
+- (BOOL)respondsToSelector:(SEL)aSelector {
+	return [self.dataSource respondsToSelector:aSelector] || [self.delegate respondsToSelector:aSelector];
+}
 
 - (NSUInteger)numberOfSections {
 	return self.tableViewSource.count;
@@ -408,12 +411,14 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 
 - (NSUInteger)numberOfRowsInSection:(NSUInteger)section {
 	NSAssert(section < self.tableViewSource.count, @"Section requested (%d) not present (%d sections)", section, self.tableViewSource.count);
+
 	return [self.tableViewSource[section] count];
 }
 
 - (id)itemAtIndexPath:(NSIndexPath *)indexPath {
 	NSAssert(indexPath.section < self.tableViewSource.count, @"Section requested (%d) not present (%d sections)", indexPath.section, self.tableViewSource.count);
 	NSAssert(indexPath.row < [self.tableViewSource[indexPath.section] count], @"Item requested (%d row) not present (%d rows) in (%d) section", indexPath.row, [self.tableViewSource[indexPath.section] count], indexPath.section);
+
 	return self.tableViewSource[indexPath.section][indexPath.row];
 }
 
