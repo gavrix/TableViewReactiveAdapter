@@ -367,7 +367,6 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 }
 
 - (void)processTableViewFlush {
-	NSLog(@"Flushing TableView");
 	
 	[self.intermediateState flushAndResetToState: self.tableViewSource
 									  flushBlock:^(NSArray *rowsToDelete, NSIndexSet *sectionsToDelete, NSArray *rowsToInsert, NSIndexSet *sectionsToInsert) {
