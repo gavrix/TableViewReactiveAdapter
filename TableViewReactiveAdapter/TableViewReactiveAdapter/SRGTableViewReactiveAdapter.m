@@ -22,13 +22,8 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 @interface SRGTableViewContentModificationEvent ()
 
 @property (nonatomic, readonly) SRGContentModificationEventType eventType;
-
 @property (nonatomic, readonly) NSArray *items;
 
-+ (instancetype)insertRowsEvent:(NSArray *)items atLocation:(NSIndexPath *)location;
-+ (instancetype)deleteRowsEvent:(NSUInteger)count atLocation:(NSIndexPath *)location;
-+ (instancetype)insertSectionAtIndexEvent:(NSUInteger)index withItems:(NSArray *)items;
-+ (instancetype)deleteSectionAtIndexEvent:(NSUInteger)index;
 @end
 
 
