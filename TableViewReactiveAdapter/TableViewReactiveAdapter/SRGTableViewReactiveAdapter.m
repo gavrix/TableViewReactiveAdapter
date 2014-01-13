@@ -264,31 +264,33 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 - (instancetype)initWithTableView:(UITableView *)tableView
 				 withInitialState:(NSArray *)array {
 	self = [super init];
-	self.tableView = tableView;
-	
-	self.dataSource = self.tableView.dataSource;
-	self.tableView.dataSource = self;
-	
-	self.flushCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
-		return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-			[self processTableViewFlush];
-			// since flushCommand has concurrentExecution turned off, this delay will
-			// ensure flush is performed not more frequent than this delay. (so tableView can finish it's animations safely)
-			[[RACScheduler mainThreadScheduler] afterDelay:.33 schedule:^{
-				[subscriber sendCompleted];
+	if (self) {
+		self.tableView = tableView;
+		
+		self.dataSource = self.tableView.dataSource;
+		self.tableView.dataSource = self;
+		
+		self.flushCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
+			return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+				[self processTableViewFlush];
+				// since flushCommand has concurrentExecution turned off, this delay will
+				// ensure flush is performed not more frequent than this delay. (so tableView can finish it's animations safely)
+				[[RACScheduler mainThreadScheduler] afterDelay:.33 schedule:^{
+					[subscriber sendCompleted];
+				}];
+				return nil;
 			}];
-			return nil;
 		}];
-	}];
-	self.sourceEventsSignal = [RACSubject subject];
-	
-	NSMutableArray *arr = [NSMutableArray array];
-	for (NSArray *innerArr in array) {
-		[arr addObject:innerArr.mutableCopy];
+		self.sourceEventsSignal = [RACSubject subject];
+		
+		NSMutableArray *arr = [NSMutableArray array];
+		for (NSArray *innerArr in array) {
+			[arr addObject:innerArr.mutableCopy];
+		}
+		self.tableViewSource = arr;
+		self.intermediateState = [[SRGTableViewIntermediateState alloc] initWithInitialState:self.tableViewSource];
+		[self initRelations];
 	}
-	self.tableViewSource = arr;
-	self.intermediateState = [[SRGTableViewIntermediateState alloc] initWithInitialState:self.tableViewSource];
-	[self initRelations];
 	return self;
 }
 
