@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/gavrix/TableViewReactiveAdapter"
   s.license      = { :type => 'MIT' }
   s.author       = { "Sergey Gavrilyuk" => "sergey.gavrilyuk@gmail.com" }
-  s.platform     = :ios
+  s.platform     = :ios, "6.0"
   s.source       = { :git => "https://github.com/gavrix/TableViewReactiveAdapter.git", :tag => "0.0.1" }
   s.source_files  = 'TableViewReactiveAdapter/TableViewReactiveAdapter/*.{h,m}'
   s.requires_arc = true
