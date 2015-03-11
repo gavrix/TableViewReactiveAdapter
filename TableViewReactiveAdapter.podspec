@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.source_files  = 'TableViewReactiveAdapter/TableViewReactiveAdapter/*.{h,m}'
   s.requires_arc = true
 
-  s.dependency 'ReactiveCocoa', '~> 2.1.8'
+  s.dependency 'ReactiveCocoa', '~> 2'
   s.dependency 'libextobjc', '0.3'
 
 end
