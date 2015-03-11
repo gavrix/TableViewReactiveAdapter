@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "TableViewReactiveAdapter"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "Small drop-in component which allows UITableView to manipulated in reactive manner through receiving ReactiveCocoa signals."
   s.homepage     = "https://github.com/gavrix/TableViewReactiveAdapter"
   s.license      = { :type => 'MIT' }
