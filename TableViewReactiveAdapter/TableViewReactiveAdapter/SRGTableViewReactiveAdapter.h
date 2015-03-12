@@ -69,6 +69,7 @@
 - (instancetype)initWithTableView:(UITableView *)tableView
 				 withInitialState:(NSArray *)array;
 
+
 /// Subscriber for UITableView source events. Can be used for RACSignal to subscribe to.
 - (id<RACSubscriber>)sourceEventsSubscriber;
 
@@ -99,5 +100,11 @@
 /// are forwarded to object set by this property.
 /// Upon initialization, this property is automatically set to whatever UITableView instance had before.
 @property (nonatomic, weak) id<UITableViewDataSource> dataSource;
+
+/// TableViewReactiveAdapter flush signal
+///
+/// @discussion sends this SRGTableViewReactiveAdapter instance everytime update events get flushed
+/// into managed UITableView
+@property (nonatomic, readonly) RACSignal *flushSignal;
 
 @end

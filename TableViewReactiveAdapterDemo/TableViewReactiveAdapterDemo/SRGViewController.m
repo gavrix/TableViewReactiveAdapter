@@ -24,11 +24,14 @@
 	
 	static int cellNumber = 0;
 	
+	[self.tableViewReactiveAdapter.flushSignal subscribeNext:^(id x) {
+		NSLog(@"***** ReactiveAdapter flushed");
+	}];
 	
 	
 	[[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
 		void (^__block recurse)() = ^{
-			double delayInSeconds = 2.25;
+			double delayInSeconds = .25;
 			dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, arc4random() % (int64_t)(delayInSeconds * NSEC_PER_SEC));
 			dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 				SRGTableViewContentModificationEvent *event = nil;
