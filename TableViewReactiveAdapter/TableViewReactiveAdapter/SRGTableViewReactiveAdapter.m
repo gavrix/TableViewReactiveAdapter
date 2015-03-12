@@ -7,7 +7,7 @@
 //
 
 #import "SRGTableViewReactiveAdapter.h"
-#import <libextobjc/extobjc.h>
+#import <objc/runtime.h>
 
 typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	SRGInsertRows,
@@ -182,7 +182,6 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 		[self initInitialState:tableViewSource];
 		_deleteIndexPaths = [NSMutableArray array];
 		_deletedSections = [NSMutableIndexSet indexSet];
-
 	}
 	return self;
 }

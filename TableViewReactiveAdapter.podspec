@@ -11,6 +11,5 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency 'ReactiveCocoa', '~> 2'
-  s.dependency 'libextobjc', '0.3'
 
 end
