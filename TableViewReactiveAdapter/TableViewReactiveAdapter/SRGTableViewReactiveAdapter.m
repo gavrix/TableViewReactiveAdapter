@@ -7,7 +7,7 @@
 //
 
 #import "SRGTableViewReactiveAdapter.h"
-#import <libextobjc/extobjc.h>
+#import <objc/runtime.h>
 
 typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	SRGInsertRows,
@@ -182,7 +182,6 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 		[self initInitialState:tableViewSource];
 		_deleteIndexPaths = [NSMutableArray array];
 		_deletedSections = [NSMutableIndexSet indexSet];
-
 	}
 	return self;
 }
@@ -259,28 +258,32 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 @property (nonatomic) SRGTableViewIntermediateState *intermediateState;
 @end
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wprotocol"
+
 @implementation SRGTableViewReactiveAdapter
 
 - (instancetype)initWithTableView:(UITableView *)tableView
 				 withInitialState:(NSArray *)array {
 	self = [super init];
 	if (self) {
-		self.tableView = tableView;
 		
-		self.dataSource = self.tableView.dataSource;
-		self.tableView.dataSource = self;
+		[self _setTableView:tableView];
 		
+		@weakify(self)
 		self.flushCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
 			return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+				@strongify(self)
 				[self processTableViewFlush];
 				// since flushCommand has concurrentExecution turned off, this delay will
 				// ensure flush is performed not more frequent than this delay. (so tableView can finish it's animations safely)
-				[[RACScheduler mainThreadScheduler] afterDelay:.33 schedule:^{
+				RACDisposable *disposable = [[RACScheduler mainThreadScheduler] afterDelay:1.33 schedule:^{
 					[subscriber sendCompleted];
 				}];
-				return nil;
+				return disposable;
 			}];
 		}];
+		
 		self.sourceEventsSignal = [RACSubject subject];
 		
 		NSMutableArray *arr = [NSMutableArray array];
@@ -292,6 +295,13 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 		[self initRelations];
 	}
 	return self;
+}
+
+- (void)_setTableView:(UITableView *)tableView {
+	self.tableView = tableView;
+	
+	self.dataSource = self.tableView.dataSource;
+	self.tableView.dataSource = self;
 }
 
 - (void)initRelations {
@@ -327,8 +337,12 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 		return event.eventType == SRGDeleteRows;
 	}], nil];
 	
-
-	[self.flushCommand rac_liftSelector:@selector(execute:) withSignals:[allEventsSignal logNext], nil];
+	RACSignal *executing = self.flushCommand.executing;
+	
+	[self.flushCommand rac_liftSelector:@selector(execute:) withSignals:
+	 [allEventsSignal map: ^id (id event) {
+	    return [[[executing ignore:@YES] take:1] mapReplace:event];
+	}].switchToLatest, nil];
 }
 
 
@@ -383,6 +397,14 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 	return self.sourceEventsSignal;
 }
 
+- (RACSignal *)flushSignal {
+	@weakify(self)
+	return [self.flushCommand.executionSignals map:^id(RACSignal *flushSignal) {
+		@strongify(self)
+		return [flushSignal.ignoreValues concat:[RACSignal return:self]];
+	}].switchToLatest;
+}
+
 
 #pragma mark - UITableViewDataSource
 
@@ -432,3 +454,4 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 }
 
 @end
+#pragma clang diagnostic pop
