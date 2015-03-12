@@ -258,6 +258,9 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 @property (nonatomic) SRGTableViewIntermediateState *intermediateState;
 @end
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wprotocol"
+
 @implementation SRGTableViewReactiveAdapter
 
 - (instancetype)initWithTableView:(UITableView *)tableView
@@ -431,3 +434,4 @@ typedef NS_ENUM(NSUInteger, SRGContentModificationEventType) {
 }
 
 @end
+#pragma clang diagnostic pop
